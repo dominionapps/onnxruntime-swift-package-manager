@@ -67,6 +67,27 @@ let package = Package(
     cxxLanguageStandard: .cxx17
 )
 
+// ------------------------------------------------------------------
+// Mirrored binary archives - why this fork differs from upstream.
+//
+// download.onnxruntime.ai no longer serves these files. Every path on it
+// answers 404, over a certificate issued for *.azureedge.net, so the
+// hostname never matches and the body is an HTML error page rather than an
+// archive. Xcode reports that as "the certificate for this server is
+// invalid", which sends you looking for a trust problem when it is a dead
+// CDN. Nothing in a project using this package can work around it.
+//
+// The two archives are therefore attached to the apx-1.24.2 release of this
+// repository and the URLs below point there. The checksums are unchanged,
+// deliberately: they are Microsoft's published SHA256s, and they are what
+// proves the mirrored bytes are Microsoft's bytes. A mirror whose copy
+// hashed differently would be rejected by SPM, which is exactly the
+// guarantee this file must keep.
+//
+// Upstream cannot be fixed instead: microsoft/onnxruntime-swift-package-
+// manager was removed from GitHub around 2026-11-17.
+// ------------------------------------------------------------------
+
 // Add the ORT CocoaPods C/C++ pod archive as a binary target.
 //
 // There are 2 scenarios:
@@ -95,7 +116,7 @@ if let pod_archive_path = ProcessInfo.processInfo.environment["ORT_POD_LOCAL_PAT
     // ORT release
     package.targets.append(
        Target.binaryTarget(name: "onnxruntime",
-                           url: "https://download.onnxruntime.ai/pod-archive-onnxruntime-c-1.24.2.zip",
+                           url: "https://github.com/dominionapps/onnxruntime-swift-package-manager/releases/download/apx-1.24.2/pod-archive-onnxruntime-c-1.24.2.zip",
                            // SHA256 checksum
                            checksum: "f7100a992d2a8135168c8afd831e6a58b465349101982aa58b3e11d36e600b54")
     )
@@ -107,7 +128,7 @@ if let ext_pod_archive_path = ProcessInfo.processInfo.environment["ORT_EXTENSION
     // ORT Extensions release
     package.targets.append(
         Target.binaryTarget(name: "onnxruntime_extensions",
-                            url: "https://download.onnxruntime.ai/pod-archive-onnxruntime-extensions-c-0.13.0.zip",
+                            url: "https://github.com/dominionapps/onnxruntime-swift-package-manager/releases/download/apx-1.24.2/pod-archive-onnxruntime-extensions-c-0.13.0.zip",
                             // SHA256 checksum
                             checksum: "346522d1171d4c99cb0908fa8e4e9330a4a6aad39cd83ce36eb654437b33e6b5")
     )
